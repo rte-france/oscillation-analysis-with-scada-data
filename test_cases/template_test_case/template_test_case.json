@@ -1,0 +1,5 @@
+{
+    "osc_start": "2022-03-11 05:30:00",
+    "osc_end": "2022-03-11 05:50:00",
+    "scada_file": "test_cases/template_test_case/template_test_case.csv"
+}

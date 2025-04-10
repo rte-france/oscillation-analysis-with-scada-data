@@ -1,0 +1,63 @@
+NA_threshold:
+  value: 0.2
+  description: Maximum 20% NA values present in the channel data, otherwise the channel is ignored
+
+min_nb_samples_amb:
+  value: 30
+  description: Minimum number of non-NA values during the ambient window for a channel to be considered
+
+min_nb_samples_osc:
+  value: 30
+  description: Minimum number of non-NA values during the oscillation window for a channel to be considered
+
+max_consecutive_NA:
+  value: 1
+  description: Maximum number of consecutive NA values tolerated, otherwise the channel is ignored
+
+min_output_threshold:
+  value: 10
+  description: If the max value of the channel is below this threshold, the channel is ignored
+
+min_diff_threshold:
+  value: 5
+  description: Minimum difference between min and max of the channel values for the channel to be considered
+
+detrending_method:
+  value: 0
+  description: 0 for difference method, 1 for median filtering method
+
+median_filter_order:
+  value: 15
+  description: Order of the median filter applied for detrending the data. Useful only if the selected detrending method is "median filter"
+
+transition_band_starting_amplitude:
+  value: 10
+  description: Amplitude of the transition band that is used at the first iteration
+
+transition_band_maximal_amplitude:
+  value: 100
+  description: Maximal value for the transition band amplitude for the iterations
+
+transition_band_amplitude_increment:
+  value: 5
+  description: Increment of transition band for iteration.
+
+pmin_osc:
+  value: 0.4
+  description: P value for the oscillation window
+
+confidence_osc:
+  value: 0.95
+  description: Confidence level for oscillation window
+
+pmax_amb:
+  value: 0.2
+  description: P value for the ambient window
+
+confidence_amb:
+  value: 0.95
+  description: Confidence level for ambient window
+
+debug:
+  value: True
+  description: If "True", additional logs will be available in the log file

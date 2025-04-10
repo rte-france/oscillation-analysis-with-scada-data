@@ -1,0 +1,42 @@
+2025-01-09 16:58:11,296 :: INFO :: ============ RUNNING ALGORITHM ============
+2025-01-09 16:58:11,297 :: INFO :: 
+2025-01-09 16:58:11,298 :: INFO :: First datetime of the SCADA record: 20220311_05h00m00
+2025-01-09 16:58:11,298 :: INFO :: Last datetime of the SCADA record: 20220311_05h59m50
+2025-01-09 16:58:11,298 :: INFO :: Beginning of oscillations: 20220311_05h30m00
+2025-01-09 16:58:11,299 :: INFO :: End of oscillations: 20220311_05h50m00
+2025-01-09 16:58:11,299 :: INFO :: Number of channels to analyze: 30
+2025-01-09 16:58:11,299 :: INFO :: 
+2025-01-09 16:58:11,299 :: INFO :: PREPROCESSING THE SCADA DATA
+2025-01-09 16:58:11,306 :: WARNING :: The difference between the maximal and minimal values of channel P_3 is too small (3 < 5): this channel is ignored
+2025-01-09 16:58:11,315 :: WARNING :: The (absolute) maximal value of channel P_10 is too small (8 < 10): this channel is ignored
+2025-01-09 16:58:11,331 :: WARNING :: Too many NA values for channel P_20 (34.72222222222222% of NA > 20.0% allowed): this channel is ignored
+2025-01-09 16:58:11,340 :: WARNING :: Too many consecutive NA values for channel P_25: this channel is ignored
+2025-01-09 16:58:11,347 :: INFO :: Number of remaining channels to analyze: 26
+2025-01-09 16:58:11,349 :: INFO :: 
+2025-01-09 16:58:11,350 :: INFO :: IDENTIFYING THE MOST LIKELY SOURCES OF FORCED OSCILLATIONS
+2025-01-09 16:58:11,381 :: DEBUG :: iteration 0 - transition_band_current_amplitude = 3
+2025-01-09 16:58:11,381 :: DEBUG :: Ranked channels and ranking_factor: []
+2025-01-09 16:58:11,390 :: DEBUG :: iteration 1 - transition_band_current_amplitude = 13
+2025-01-09 16:58:11,390 :: DEBUG :: Ranked channels and ranking_factor: []
+2025-01-09 16:58:11,398 :: DEBUG :: iteration 2 - transition_band_current_amplitude = 23
+2025-01-09 16:58:11,398 :: DEBUG :: Ranked channels and ranking_factor: [('P_23', 0.71)]
+2025-01-09 16:58:11,406 :: DEBUG :: iteration 3 - transition_band_current_amplitude = 33
+2025-01-09 16:58:11,406 :: DEBUG :: Ranked channels and ranking_factor: [('P_23', 0.58)]
+2025-01-09 16:58:11,415 :: DEBUG :: iteration 4 - transition_band_current_amplitude = 43
+2025-01-09 16:58:11,415 :: DEBUG :: Ranked channels and ranking_factor: [('P_23', 0.45)]
+2025-01-09 16:58:11,422 :: DEBUG :: iteration 5 - transition_band_current_amplitude = 53
+2025-01-09 16:58:11,422 :: DEBUG :: Ranked channels and ranking_factor: []
+2025-01-09 16:58:11,430 :: DEBUG :: iteration 6 - transition_band_current_amplitude = 63
+2025-01-09 16:58:11,430 :: DEBUG :: Ranked channels and ranking_factor: []
+2025-01-09 16:58:11,440 :: DEBUG :: iteration 7 - transition_band_current_amplitude = 73
+2025-01-09 16:58:11,440 :: DEBUG :: Ranked channels and ranking_factor: []
+2025-01-09 16:58:11,448 :: DEBUG :: iteration 8 - transition_band_current_amplitude = 83
+2025-01-09 16:58:11,449 :: DEBUG :: Ranked channels and ranking_factor: []
+2025-01-09 16:58:11,458 :: DEBUG :: iteration 9 - transition_band_current_amplitude = 93
+2025-01-09 16:58:11,458 :: DEBUG :: Ranked channels and ranking_factor: []
+2025-01-09 16:58:11,459 :: INFO :: 
+2025-01-09 16:58:11,460 :: INFO :: PROCESSING OUTPUTS
+2025-01-09 16:58:11,462 :: INFO :: => The suspicious channel is P_23
+2025-01-09 16:58:12,039 :: INFO :: Output files can be found in /home/clementrem/workspace/oscillation_analysis_with_scada_data/default_output_folder
+2025-01-09 16:58:12,039 :: INFO :: 
+2025-01-09 16:58:12,040 :: INFO :: ============ END OF COMPUTATION ===========

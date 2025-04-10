@@ -1,0 +1,8 @@
+__pycache__
+.idea
+venv
+default_output_folder
+
+# private test cases should not be uploaded
+test_cases/*
+!test_cases/template_test_case/
