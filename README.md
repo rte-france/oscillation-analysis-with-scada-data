@@ -155,9 +155,13 @@ The default file is `misc/settings.yaml`.
 ```bash
 streamlit run sources/oasis_gui.py
 ```
-* Load the json file that contains the SCADA data
+* Load the json file that contains the SCADA data using the **Browse files** button.
 * The various parameters that are being used in the algorithm can be checked (optional)
 * Click the **Run algorithm** button.
+
+<p align="center">
+<img src="resources/gui_screenshot.png">
+</p>
 
 ### Outputs
 
