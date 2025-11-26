@@ -201,7 +201,7 @@ def plot_suspicious_channels(scada_data, detrended_scada_data,
             line_width=0,
             row=1, col=1
         )
-        fig.update_yaxes(title_text="MW", range=[min_y1 - 10, max_y1 + 10], row=1, col=1)
+        fig.update_yaxes(title_text="MW or MVAr", range=[min_y1 - 10, max_y1 + 10], row=1, col=1)
         fig.update_xaxes(title_text="Time", row=1, col=1)
 
         # Difference Plot
@@ -234,7 +234,7 @@ def plot_suspicious_channels(scada_data, detrended_scada_data,
             row=1, col=2
         )
 
-        fig.update_yaxes(title_text="MW", range=[min_y2 - 10, max_y2 + 10], row=1, col=2)
+        fig.update_yaxes(title_text="MW or MVAr", range=[min_y2 - 10, max_y2 + 10], row=1, col=2)
         fig.update_xaxes(title_text="Time", row=1, col=2)
 
         # Save figure as html
