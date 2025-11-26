@@ -75,7 +75,7 @@ If you use this implementation in your work or research,
 it would be appreciated if you could quote the following document 
 in your publications or presentations:
 
-[Oscillation Analysis with SCADA using Inferential Statistics (OASIS)](https://documents.pserc.wisc.edu/documents/publications/reports/2024_reports/S_103G_Final_Report.pdf)
+[SCADA-Based Detection and Analysis of Oscillations with Inferential Statistics](https://ieeexplore.ieee.org/document/11239464)
 
 ## Requirements
 
