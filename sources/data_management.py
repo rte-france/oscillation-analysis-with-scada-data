@@ -76,7 +76,7 @@ def channel_filtering(scada_data, osc_start, osc_end, settings, logger):
             continue
         # remove column with too low values
         value_max = np.max(np.abs(col_values))
-        if value_max <= settings.get_min_output_threshold():  # remove small or not in use elements
+        if value_max <= settings.get_min_output_threshold():
             logger.warning("The (absolute) maximal value of channel {} is too small ({} < {}): "
                            "this channel is ignored".format(
                 channel, value_max, settings.get_min_output_threshold()))
@@ -84,11 +84,20 @@ def channel_filtering(scada_data, osc_start, osc_end, settings, logger):
             continue
         # remove columns with too low diff between min and max
         max_diff = np.max(col_values) - np.min(col_values)
-        if max_diff <= settings.get_min_diff_threshold():  # remove solid channels
+        if max_diff <= settings.get_min_diff_threshold():
             logger.warning("The difference between the maximal and minimal values of channel {} "
                            "is too small ({} < {}): "
                            "this channel is ignored".format(
                 channel, max_diff, settings.get_min_diff_threshold()))
+            channels_to_remove.append(channel)
+            continue
+        # remove columns with quantification problems
+        nb_different_values = len(set(col_values))
+        if nb_different_values < settings.get_min_number_different_values():
+            logger.warning("Too few different values for channel {} "
+                           "({} < {}): "
+                           "this channel is suspected to be affected by quantification problems, and is ignored".format(
+                channel, nb_different_values, settings.get_min_number_different_values()))
             channels_to_remove.append(channel)
             continue
         # Calculate the percentage of NA values for the current column

@@ -22,6 +22,10 @@ min_diff_threshold:
   value: 5
   description: Minimum difference between min and max of the channel values for the channel to be considered
 
+min_number_different_values:
+  value: 10
+  description: The minimum number of different values a channel must contain. This parameter was introduced to discard channels with quantification problems
+
 detrending_method:
   value: 0
   description: 0 for difference method, 1 for median filtering method
