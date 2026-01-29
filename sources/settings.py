@@ -63,6 +63,9 @@ class Settings:
     def get_min_diff_threshold(self):
         return self.min_diff_threshold
 
+    def get_min_number_different_values(self):
+        return self.min_number_different_values
+
     def get_detrending_method(self):
         return self.detrending_method
 
@@ -97,7 +100,7 @@ class Settings:
 
     def filter_params(self):
         data = {"parameter": ["NA_threshold", "min_nb_samples_amb", "get_min_nb_samples_osc", "max_consecutive_NA",
-                              "min_output_threshold", "min_diff_threshold",
+                              "min_output_threshold", "min_diff_threshold", "min_number_different_values",
                               "detrending_method", "median_filter_order"],
                 "value": [self.get_NA_threshold(),
                           self.get_min_nb_samples_amb(),
@@ -105,6 +108,7 @@ class Settings:
                           self.get_max_consecutive_NA(),
                           self.get_min_output_threshold(),
                           self.get_min_diff_threshold(),
+                          self.get_min_number_different_values(),
                           self.get_detrending_method(),
                           self.get_median_filter_order()],
                 "description": [self.get_description("NA_threshold"),
@@ -113,6 +117,7 @@ class Settings:
                                 self.get_description("max_consecutive_NA"),
                                 self.get_description("min_output_threshold"),
                                 self.get_description("min_diff_threshold"),
+                                self.get_description("min_number_different_values"),
                                 self.get_description("detrending_method"),
                                 self.get_description("median_filter_order")]}
         filter_parameters = pd.DataFrame(data)
