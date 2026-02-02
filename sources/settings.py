@@ -99,6 +99,7 @@ class Settings:
         return self.confidence_amb
 
     def filter_params(self):
+        """ returns the filter parameters as a dataframe for display in the GUI """
         data = {"parameter": ["NA_threshold", "min_nb_samples_amb", "get_min_nb_samples_osc", "max_consecutive_NA",
                               "min_output_threshold", "min_diff_threshold", "min_number_different_values",
                               "detrending_method", "median_filter_order"],
@@ -124,6 +125,7 @@ class Settings:
         return filter_parameters
 
     def iteration_params(self):
+        """ returns the iteration parameters as a dataframe for display in the GUI """
         data = {"parameter": ["transition_band_starting_amplitude", "transition_band_maximal_amplitude",
                               "transition_band_amplitude_increment", "debug"],
                 "value": [self.get_transition_band_starting_amplitude(),
@@ -140,6 +142,7 @@ class Settings:
 
 
     def statistical_params(self):
+        """ returns the statistical parameters as a dataframe for display in the GUI """
         data = {"parameter": ["pmin_osc", "confidence_osc", "pmax_amb", "confidence_amb"],
                 "value": [self.get_pmin_osc(),
                           self.get_confidence_osc(),
