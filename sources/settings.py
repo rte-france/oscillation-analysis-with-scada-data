@@ -45,8 +45,8 @@ class Settings:
             raise KeyError(f"No description available for parameter '{key}'")
 
     # Data filtering and detrending parameters
-    def get_NA_threshold(self):
-        return self.NA_threshold
+    def get_na_threshold(self):
+        return self.na_threshold
 
     def get_min_nb_samples_amb(self):
         return self.min_nb_samples_amb
@@ -54,8 +54,8 @@ class Settings:
     def get_min_nb_samples_osc(self):
         return self.min_nb_samples_osc
 
-    def get_max_consecutive_NA(self):
-        return self.max_consecutive_NA
+    def get_max_consecutive_na(self):
+        return self.max_consecutive_na
 
     def get_min_output_threshold(self):
         return self.min_output_threshold
@@ -100,22 +100,22 @@ class Settings:
 
     def filter_params(self):
         """ returns the filter parameters as a dataframe for display in the GUI """
-        data = {"parameter": ["NA_threshold", "min_nb_samples_amb", "get_min_nb_samples_osc", "max_consecutive_NA",
+        data = {"parameter": ["na_threshold", "min_nb_samples_amb", "get_min_nb_samples_osc", "max_consecutive_na",
                               "min_output_threshold", "min_diff_threshold", "min_number_different_values",
                               "detrending_method", "median_filter_order"],
-                "value": [self.get_NA_threshold(),
+                "value": [self.get_na_threshold(),
                           self.get_min_nb_samples_amb(),
                           self.get_min_nb_samples_osc(),
-                          self.get_max_consecutive_NA(),
+                          self.get_max_consecutive_na(),
                           self.get_min_output_threshold(),
                           self.get_min_diff_threshold(),
                           self.get_min_number_different_values(),
                           self.get_detrending_method(),
                           self.get_median_filter_order()],
-                "description": [self.get_description("NA_threshold"),
+                "description": [self.get_description("na_threshold"),
                                 self.get_description("min_nb_samples_amb"),
                                 self.get_description("min_nb_samples_osc"),
-                                self.get_description("max_consecutive_NA"),
+                                self.get_description("max_consecutive_na"),
                                 self.get_description("min_output_threshold"),
                                 self.get_description("min_diff_threshold"),
                                 self.get_description("min_number_different_values"),

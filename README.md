@@ -103,7 +103,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Input format
+### Inputs format
 
 The test case data are expected to be provided as a json file:
 
@@ -129,7 +129,7 @@ as separator.
 ### Settings
 
 If using the web interface, the settings will be read from 
-the default settings file : `misc/settings.yaml`.
+the default settings file : `resources/settings.yaml`.
 
 If using the command line interface, it is possible to specify
 a different custom settings file.
@@ -140,14 +140,14 @@ However, these values must be modified with caution.
 
 The command line has the following form:
 ```bash
-python3 sources/oasis_run.py --input-file test_cases/template_test_case/template_test_case.json
+python3 sources/oasis_run.py --input-file nrt/template_test_case/template_test_case.json
 ```
 
 In addition to **--input-file** , it is possible to specify two other parameters:
 * **--output-folder** (optional): the folder where the outputs will be written.
 By default they will be written in `default_output_folder/` within the OASIS project folder.
 * **--settings-file** (optional): a yaml file describing the settings. 
-The default file is `misc/settings.yaml`.
+The default file is `resources/settings.yaml`.
 
 ### Using the web interface
 

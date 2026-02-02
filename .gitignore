@@ -2,7 +2,10 @@ __pycache__
 .idea
 venv
 default_output_folder
+coverage.xml
+.coverage
+.scannerwork
 
-# private test cases should not be uploaded
+# private data should not be uploaded
 test_cases/*
-!test_cases/template_test_case/
+run_sonar_scanner.sh
