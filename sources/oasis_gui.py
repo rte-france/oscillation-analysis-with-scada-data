@@ -101,7 +101,7 @@ def create_run_algorithm_button(
         log_area = st.empty()
         streamlit_logger = create_streamlit_logger(log_area, debug=False)
         fig_list = oasis_run.main(scada_data, osc_start, osc_end, settings, output_folder,
-                       streamlit_logger)
+                       streamlit_logger, True)
         if fig_list is not None:
             st.session_state["fig_list"] = fig_list
 

@@ -164,7 +164,8 @@ def binomial(k, n, p):
 def plot_suspicious_channels(scada_data, detrended_scada_data,
                              osc_start, osc_end,
                              suspicious_channels, final_transition_band_amplitude,
-                             output_folder):
+                             output_folder,
+                             dump_plot):
     html_plots_file = os.path.join(output_folder, 'plots.html')
     fig_list = []
     html_images = []
@@ -242,13 +243,14 @@ def plot_suspicious_channels(scada_data, detrended_scada_data,
         html_images.append(pio.to_html(fig, full_html=False))
 
     # Create html
-    with open(html_plots_file, "w", encoding="utf-8") as html_file:
-        html_file.write("<!DOCTYPE html>\n<html>\n<body>\n")
-        html_file.write("<h1 style='text-align: center;'>Graphs</h1>\n")
-        for html_fig in html_images:
-            html_file.write(html_fig)
-            html_file.write("<hr>\n")
-        html_file.write("</body>\n</html>\n")
+    if dump_plot:
+        with open(html_plots_file, "w", encoding="utf-8") as html_file:
+            html_file.write("<!DOCTYPE html>\n<html>\n<body>\n")
+            html_file.write("<h1 style='text-align: center;'>Graphs</h1>\n")
+            for html_fig in html_images:
+                html_file.write(html_fig)
+                html_file.write("<hr>\n")
+            html_file.write("</body>\n</html>\n")
 
     return fig_list
 
@@ -316,7 +318,8 @@ def main(
         osc_start: datetime, osc_end: datetime,
         settings: Settings,
         output_folder: str,
-        streamlit_logger=None
+        streamlit_logger=None,
+        dump_plot=True
 ):
     # Init some variables
     output_json = os.path.join(output_folder, "oasis_output.json")
@@ -351,7 +354,8 @@ def main(
     # Processing outputs
     write_processing_outputs_logs(suspicious_channels, logger, streamlit_logger)
     fig_list = plot_suspicious_channels(scada_data, detrended_scada_data, osc_start, osc_end,
-                             suspicious_channels, final_transition_band_amplitude, output_folder)
+                                        suspicious_channels, final_transition_band_amplitude,
+                                        output_folder, dump_plot)
     save_output_summary(output_json, output_summary_dict)
     write_end_of_computation_logs(output_folder, logger, streamlit_logger)
 
@@ -382,10 +386,17 @@ if __name__ == "__main__":
         default=None,
         help="optional - file that contains the settings for the algorithm"
     )
+    parser.add_argument(
+        '--no-dump-plot',
+        dest='dump_plot',
+        action='store_false',
+        help="if set, does NOT save the plots.html file"
+    )
     args = parser.parse_args()
     input_file = args.input_file
     settings_file = args.settings_file
     output_folder = args.output_folder
+    dump_plot = args.dump_plot
 
     # Testing input data
     if not os.path.isfile(input_file):
@@ -418,4 +429,4 @@ if __name__ == "__main__":
         settings = Settings(settings_file)
 
     # run
-    main(scada_data, osc_start, osc_end, settings, output_folder)
+    main(scada_data, osc_start, osc_end, settings, output_folder, None, dump_plot)
