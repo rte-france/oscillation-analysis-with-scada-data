@@ -310,7 +310,8 @@ def end_computation_unacceptable_scada_data(output_json, output_summary_dict, lo
 
 
 def save_output_summary(output_json, output_summary_dict):
-    json.dump(output_summary_dict, open(output_json, 'w'), indent=2)
+    with open(output_json, 'w') as f:
+        json.dump(output_summary_dict, f, indent=2)
 
 
 def main(
