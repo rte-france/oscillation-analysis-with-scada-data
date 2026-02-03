@@ -34,7 +34,9 @@ class TestLoggerManagement(unittest.TestCase):
     def test_create_logger_and_log(self):
         with tempfile.NamedTemporaryFile(delete=False) as tf:
             path = tf.name
-        logger = create_logger(path, debug=True)
+        debug = True
+        add_stream_logger = False
+        logger = create_logger(path, debug, add_stream_logger)
 
         # StreamHandler is removed to not pollute the console output
         for handler in logger.handlers[:]:
@@ -80,13 +82,9 @@ class TestLoggerManagement(unittest.TestCase):
     def test_add_log_msg_functions(self):
         with tempfile.NamedTemporaryFile(delete=False) as tf:
             path = tf.name
-        logger = create_logger(path, debug=True)
-
-        # StreamHandler is removed to not pollute the console output
-        for handler in logger.handlers[:]:
-            if isinstance(handler, logging.StreamHandler) and not isinstance(handler, logging.FileHandler):
-                logger.removeHandler(handler)
-
+        debug = True
+        add_stream_logger = False
+        logger = create_logger(path, debug, add_stream_logger)
         add_log_msg_info("INFO_MSG", logger)
         add_log_msg_debug("DEBUG_MSG", logger)
         add_log_msg_warning("WARN_MSG", logger)

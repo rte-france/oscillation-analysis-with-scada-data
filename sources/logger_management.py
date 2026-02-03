@@ -15,7 +15,7 @@ import logging
 import logging.handlers
 
 
-def create_logger(log_file, debug=False):
+def create_logger(log_file, debug=False, add_stream_logger=False):
     """ This logger should contain all the information related the computation """
     logger = logging.getLogger("oasis_computation")
     log_level = logging.DEBUG if debug else logging.INFO
@@ -36,10 +36,11 @@ def create_logger(log_file, debug=False):
     logger.addHandler(file_handler)
 
     # Stream handler
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(log_level)
-    stream_handler.setFormatter(formatter)
-    logger.addHandler(stream_handler)
+    if add_stream_logger:
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(log_level)
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
 
     return logger
 

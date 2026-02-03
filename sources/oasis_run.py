@@ -319,13 +319,14 @@ def main(
         settings: Settings,
         output_folder: str,
         streamlit_logger=None,
+        add_stream_logger=False,
         dump_plot=True
 ):
     # Init some variables
     output_json = os.path.join(output_folder, "oasis_output.json")
     output_summary_dict = dict()
     log_file = os.path.join(output_folder, f"{os.path.splitext(os.path.basename(__file__))[0]}.log")
-    logger = create_logger(log_file, debug=settings.is_debug())
+    logger = create_logger(log_file, settings.is_debug(), add_stream_logger)
     clear_streamlit_logger(streamlit_logger)
 
     # some logs
@@ -392,10 +393,17 @@ if __name__ == "__main__":
         action='store_false',
         help="if set, does NOT save the plots.html file"
     )
+    parser.add_argument(
+        '--stream_logs',
+        dest='stream_logs',
+        action='store_true',
+        help="if set, the logs will be displayed in the console in addition to the oasis_run.log file"
+    )
     args = parser.parse_args()
     input_file = args.input_file
     settings_file = args.settings_file
     output_folder = args.output_folder
+    add_stream_logger = args.stream_logs
     dump_plot = args.dump_plot
 
     # Testing input data
@@ -429,4 +437,4 @@ if __name__ == "__main__":
         settings = Settings(settings_file)
 
     # run
-    main(scada_data, osc_start, osc_end, settings, output_folder, None, dump_plot)
+    main(scada_data, osc_start, osc_end, settings, output_folder, None, add_stream_logger, dump_plot)

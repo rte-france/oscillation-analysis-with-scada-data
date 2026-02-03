@@ -50,6 +50,8 @@ class DummySettings:
 class DummyLogger:
     def __init__(self):
         self.messages = []
+    def debug(self, msg):
+        self.messages.append(msg)
     def warning(self, msg):
         self.messages.append(msg)
     def info(self, msg):
