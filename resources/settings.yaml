@@ -1,4 +1,4 @@
-NA_threshold:
+na_threshold:
   value: 0.2
   description: Maximum 20% NA values present in the channel data, otherwise the channel is ignored
 
@@ -10,7 +10,7 @@ min_nb_samples_osc:
   value: 30
   description: Minimum number of non-NA values during the oscillation window for a channel to be considered
 
-max_consecutive_NA:
+max_consecutive_na:
   value: 1
   description: Maximum number of consecutive NA values tolerated, otherwise the channel is ignored
 

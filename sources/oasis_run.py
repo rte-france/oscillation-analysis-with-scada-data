@@ -137,14 +137,14 @@ def count_transitions(data: np.ndarray, tested_amplitude: float):
 
     # count transitions between R1 and another region
     data_upper = data - tested_amplitude
-    loc_transition_with_R1 = zero_crossings(data_upper)
+    loc_transition_with_r1 = zero_crossings(data_upper)
 
     # count transitions between R3 and another region
     data_lower = data + tested_amplitude
-    loc_transition_with_R3 = zero_crossings(data_lower)
+    loc_transition_with_r3 = zero_crossings(data_lower)
 
     # merging indices
-    loc_transitions = np.union1d(loc_transition_with_R1, loc_transition_with_R3)
+    loc_transitions = np.union1d(loc_transition_with_r1, loc_transition_with_r3)
     number_of_transitions = len(loc_transitions)
     return number_of_transitions
 

@@ -56,6 +56,84 @@ def distribute_seconds_within_minute(series):
     return pd.Series(adjusted_times)
 
 
+def is_channel_empty(channel):
+    return channel == ''
+
+
+def has_too_low_max(col_values, settings):
+    value_max = np.max(np.abs(col_values))
+    return value_max <= settings.get_min_output_threshold(), value_max
+
+
+def has_too_low_diff(col_values, settings):
+    max_diff = np.max(col_values) - np.min(col_values)
+    return max_diff <= settings.get_min_diff_threshold(), max_diff
+
+
+def has_quantif_problem(col_values, settings):
+    nb_different = len(set(col_values))
+    return nb_different < settings.get_min_number_different_values(), nb_different
+
+
+def too_many_na(col_values, settings):
+    na_prop = np.isnan(col_values).sum() / len(col_values)
+    return na_prop >= settings.get_na_threshold(), na_prop
+
+
+def not_enough_samples(col_series, threshold):
+    return col_series.count() < threshold, col_series.count()
+
+
+def too_many_consecutive_na(col_values, settings):
+    na_counts = np.isnan(col_values).astype(int)
+    consecutive_counts = na_counts.cumsum()
+    max_consecutive = consecutive_counts[~np.isnan(col_values)].max()
+    return max_consecutive > settings.get_max_consecutive_na(), max_consecutive
+
+
+def is_channel_to_remove(channel, col_values, col_values_amb, col_values_osc,
+                         settings, logger):
+    if is_channel_empty(channel):
+        logger.warning("A column with no id has been found: the column is ignored")
+        return True
+
+    failed, val = has_too_low_max(col_values, settings)
+    if failed:
+        logger.warning(f"(Max abs) channel {channel} too small ({val} < {settings.get_min_output_threshold()})")
+        return True
+
+    failed, val = has_too_low_diff(col_values, settings)
+    if failed:
+        logger.warning(f"(Diff min/max) channel {channel} too low ({val} < {settings.get_min_diff_threshold()})")
+        return True
+
+    failed, val = has_quantif_problem(col_values, settings)
+    if failed:
+        logger.warning(
+            f"(Quantification) channel {channel} has too few different values ({val} < {settings.get_min_number_different_values()})")
+        return True
+
+    failed, val = too_many_na(col_values, settings)
+    if failed:
+        logger.warning(f"(NA proportion) channel {channel} has too many NA ({val:.1%})")
+        return True
+
+    failed, val = not_enough_samples(col_values_osc, settings.get_min_nb_samples_osc())
+    if failed:
+        logger.warning(f"channel {channel}: not enough osc samples ({val} < {settings.get_min_nb_samples_osc()})")
+        return True
+
+    failed, val = not_enough_samples(col_values_amb, settings.get_min_nb_samples_amb())
+    if failed:
+        logger.warning(f"channel {channel}: not enough amb samples ({val} < {settings.get_min_nb_samples_amb()})")
+        return True
+
+    failed, val = too_many_consecutive_na(col_values, settings)
+    if failed:
+        logger.warning(f"channel {channel}: too many consecutive NA ({val} > {settings.get_max_consecutive_na()})")
+        return True
+
+
 def channel_filtering(scada_data, osc_start, osc_end, settings, logger):
     """
     The scada_data are processed in order to remove some channels which
@@ -69,59 +147,8 @@ def channel_filtering(scada_data, osc_start, osc_end, settings, logger):
         col_values_amb = scada_data_amb[channel]
         col_values_osc = scada_data_osc[channel]
 
-        # remove empty column
-        if channel == '':
-            logger.warning("A column with no id has been found: the column is ignored")
-            channels_to_remove.append(channel)
-            continue
-        # remove column with too low values
-        value_max = np.max(np.abs(col_values))
-        if value_max <= settings.get_min_output_threshold():
-            logger.warning("The (absolute) maximal value of channel {} is too small ({} < {}): "
-                           "this channel is ignored".format(
-                channel, value_max, settings.get_min_output_threshold()))
-            channels_to_remove.append(channel)
-            continue
-        # remove columns with too low diff between min and max
-        max_diff = np.max(col_values) - np.min(col_values)
-        if max_diff <= settings.get_min_diff_threshold():
-            logger.warning("The difference between the maximal and minimal values of channel {} "
-                           "is too small ({} < {}): "
-                           "this channel is ignored".format(
-                channel, max_diff, settings.get_min_diff_threshold()))
-            channels_to_remove.append(channel)
-            continue
-        # remove columns with quantification problems
-        nb_different_values = len(set(col_values))
-        if nb_different_values < settings.get_min_number_different_values():
-            logger.warning("Too few different values for channel {} "
-                           "({} < {}): "
-                           "this channel is suspected to be affected by quantification problems, and is ignored".format(
-                channel, nb_different_values, settings.get_min_number_different_values()))
-            channels_to_remove.append(channel)
-            continue
-        # Calculate the percentage of NA values for the current column
-        NA_proportion = np.isnan(col_values).sum() / len(col_values)
-        # Check if the percentage exceeds the threshold
-        if NA_proportion >= settings.get_NA_threshold():
-            logger.warning("Too many NA values for channel {} ({}% of NA > {}% allowed): "
-                           "this channel is ignored".format(
-                channel, NA_proportion * 100, settings.get_NA_threshold() * 100))
-            channels_to_remove.append(channel)
-            continue
-        # Removing channels with too few samples for ambient or oscillation window
-        nb_sampes_osc = col_values_osc.count()
-        if nb_sampes_osc < settings.get_min_nb_samples_osc():
-            logger.warning("Too few measures for channel {} for the oscillation window ({} measures but {} minimum expected): "
-                           "this channel is ignored".format(
-                channel, nb_sampes_osc, settings.get_min_nb_samples_osc()))
-            channels_to_remove.append(channel)
-            continue
-        nb_samples_amb = col_values_amb.count()
-        if nb_samples_amb < settings.get_min_nb_samples_amb():
-            logger.warning("Too few measures for channel {} for the ambient window ({} measures but {} minimum expected): "
-                           "this channel is ignored".format(
-                channel, nb_samples_amb, settings.get_min_nb_samples_amb()))
+        if is_channel_to_remove(channel, col_values, col_values_amb, col_values_osc,
+                                settings, logger):
             channels_to_remove.append(channel)
             continue
 
@@ -129,13 +156,13 @@ def channel_filtering(scada_data, osc_start, osc_end, settings, logger):
         na_counts = np.isnan(col_values).astype(int)
         consecutive_counts = na_counts.cumsum()
         max_consecutive = consecutive_counts[~np.isnan(col_values)].max()
-        if max_consecutive > settings.get_max_consecutive_NA():
+        if max_consecutive > settings.get_max_consecutive_na():
             # If false, drop the entire column
             logger.warning("Too many consecutive NA values for channel {}: "
                            "this channel is ignored".format(channel))
             channels_to_remove.append(channel)
             continue
-        if (max_consecutive > 0) and (max_consecutive <= settings.get_max_consecutive_NA()):
+        if (max_consecutive > 0) and (max_consecutive <= settings.get_max_consecutive_na()):
             # If true, perform linear interpolation for the column
             indices = np.arange(len(col_values))
             nan_indices = indices[np.isnan(col_values)]
