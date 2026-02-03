@@ -94,43 +94,43 @@ def too_many_consecutive_na(col_values, settings):
 def is_channel_to_remove(channel, col_values, col_values_amb, col_values_osc,
                          settings, logger):
     if is_channel_empty(channel):
-        logger.warning("A column with no id has been found: the column is ignored")
+        logger.debug("A column with no id has been found: the column is ignored")
         return True
 
     failed, val = has_too_low_max(col_values, settings)
     if failed:
-        logger.warning(f"(Max abs) channel {channel} too small ({val} < {settings.get_min_output_threshold()})")
+        logger.debug(f"(Max abs) channel {channel} too small ({val} < {settings.get_min_output_threshold()})")
         return True
 
     failed, val = has_too_low_diff(col_values, settings)
     if failed:
-        logger.warning(f"(Diff min/max) channel {channel} too low ({val} < {settings.get_min_diff_threshold()})")
+        logger.debug(f"(Diff min/max) channel {channel} too low ({val} < {settings.get_min_diff_threshold()})")
         return True
 
     failed, val = has_quantif_problem(col_values, settings)
     if failed:
-        logger.warning(
+        logger.debug(
             f"(Quantification) channel {channel} has too few different values ({val} < {settings.get_min_number_different_values()})")
         return True
 
     failed, val = too_many_na(col_values, settings)
     if failed:
-        logger.warning(f"(NA proportion) channel {channel} has too many NA ({val:.1%})")
+        logger.debug(f"(NA proportion) channel {channel} has too many NA ({val:.1%})")
         return True
 
     failed, val = not_enough_samples(col_values_osc, settings.get_min_nb_samples_osc())
     if failed:
-        logger.warning(f"channel {channel}: not enough osc samples ({val} < {settings.get_min_nb_samples_osc()})")
+        logger.debug(f"channel {channel}: not enough osc samples ({val} < {settings.get_min_nb_samples_osc()})")
         return True
 
     failed, val = not_enough_samples(col_values_amb, settings.get_min_nb_samples_amb())
     if failed:
-        logger.warning(f"channel {channel}: not enough amb samples ({val} < {settings.get_min_nb_samples_amb()})")
+        logger.debug(f"channel {channel}: not enough amb samples ({val} < {settings.get_min_nb_samples_amb()})")
         return True
 
     failed, val = too_many_consecutive_na(col_values, settings)
     if failed:
-        logger.warning(f"channel {channel}: too many consecutive NA ({val} > {settings.get_max_consecutive_na()})")
+        logger.debug(f"channel {channel}: too many consecutive NA ({val} > {settings.get_max_consecutive_na()})")
         return True
 
 

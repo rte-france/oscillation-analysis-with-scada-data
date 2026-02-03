@@ -164,7 +164,8 @@ def binomial(k, n, p):
 def plot_suspicious_channels(scada_data, detrended_scada_data,
                              osc_start, osc_end,
                              suspicious_channels, final_transition_band_amplitude,
-                             output_folder):
+                             output_folder,
+                             dump_plot):
     html_plots_file = os.path.join(output_folder, 'plots.html')
     fig_list = []
     html_images = []
@@ -242,13 +243,14 @@ def plot_suspicious_channels(scada_data, detrended_scada_data,
         html_images.append(pio.to_html(fig, full_html=False))
 
     # Create html
-    with open(html_plots_file, "w", encoding="utf-8") as html_file:
-        html_file.write("<!DOCTYPE html>\n<html>\n<body>\n")
-        html_file.write("<h1 style='text-align: center;'>Graphs</h1>\n")
-        for html_fig in html_images:
-            html_file.write(html_fig)
-            html_file.write("<hr>\n")
-        html_file.write("</body>\n</html>\n")
+    if dump_plot:
+        with open(html_plots_file, "w", encoding="utf-8") as html_file:
+            html_file.write("<!DOCTYPE html>\n<html>\n<body>\n")
+            html_file.write("<h1 style='text-align: center;'>Graphs</h1>\n")
+            for html_fig in html_images:
+                html_file.write(html_fig)
+                html_file.write("<hr>\n")
+            html_file.write("</body>\n</html>\n")
 
     return fig_list
 
@@ -308,7 +310,8 @@ def end_computation_unacceptable_scada_data(output_json, output_summary_dict, lo
 
 
 def save_output_summary(output_json, output_summary_dict):
-    json.dump(output_summary_dict, open(output_json, 'w'), indent=2)
+    with open(output_json, 'w') as f:
+        json.dump(output_summary_dict, f, indent=2)
 
 
 def main(
@@ -316,13 +319,15 @@ def main(
         osc_start: datetime, osc_end: datetime,
         settings: Settings,
         output_folder: str,
-        streamlit_logger=None
+        streamlit_logger=None,
+        add_stream_logger=False,
+        dump_plot=True
 ):
     # Init some variables
     output_json = os.path.join(output_folder, "oasis_output.json")
     output_summary_dict = dict()
     log_file = os.path.join(output_folder, f"{os.path.splitext(os.path.basename(__file__))[0]}.log")
-    logger = create_logger(log_file, debug=settings.is_debug())
+    logger = create_logger(log_file, settings.is_debug(), add_stream_logger)
     clear_streamlit_logger(streamlit_logger)
 
     # some logs
@@ -351,7 +356,8 @@ def main(
     # Processing outputs
     write_processing_outputs_logs(suspicious_channels, logger, streamlit_logger)
     fig_list = plot_suspicious_channels(scada_data, detrended_scada_data, osc_start, osc_end,
-                             suspicious_channels, final_transition_band_amplitude, output_folder)
+                                        suspicious_channels, final_transition_band_amplitude,
+                                        output_folder, dump_plot)
     save_output_summary(output_json, output_summary_dict)
     write_end_of_computation_logs(output_folder, logger, streamlit_logger)
 
@@ -382,10 +388,24 @@ if __name__ == "__main__":
         default=None,
         help="optional - file that contains the settings for the algorithm"
     )
+    parser.add_argument(
+        '--no-dump-plot',
+        dest='dump_plot',
+        action='store_false',
+        help="if set, does NOT save the plots.html file"
+    )
+    parser.add_argument(
+        '--stream_logs',
+        dest='stream_logs',
+        action='store_true',
+        help="if set, the logs will be displayed in the console in addition to the oasis_run.log file"
+    )
     args = parser.parse_args()
     input_file = args.input_file
     settings_file = args.settings_file
     output_folder = args.output_folder
+    add_stream_logger = args.stream_logs
+    dump_plot = args.dump_plot
 
     # Testing input data
     if not os.path.isfile(input_file):
@@ -418,4 +438,4 @@ if __name__ == "__main__":
         settings = Settings(settings_file)
 
     # run
-    main(scada_data, osc_start, osc_end, settings, output_folder)
+    main(scada_data, osc_start, osc_end, settings, output_folder, None, add_stream_logger, dump_plot)
