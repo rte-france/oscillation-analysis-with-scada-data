@@ -46,7 +46,7 @@ class TestTemplateTestCase(unittest.TestCase):
             with open(output_json, 'r') as f:
                 output_results = yaml.safe_load(f)
                 suspicious_channels = output_results["suspicious_channels"]
-                expected_suspicious_channels = {'P_23': 0.49}
+                expected_suspicious_channels = {'P_23': 0.36}
                 self.assertEqual(suspicious_channels, expected_suspicious_channels)
 
 

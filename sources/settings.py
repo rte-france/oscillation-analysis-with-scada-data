@@ -86,18 +86,16 @@ class Settings:
         return self.debug
 
     # Statistical parameters
-    def get_pmin_osc(self):
-        return self.pmin_osc
+    def get_p_value(self):
+        return self.p_value
 
-    def get_confidence_osc(self):
-        return self.confidence_osc
+    def get_confidence(self):
+        return self.confidence
 
-    def get_pmax_amb(self):
-        return self.pmax_amb
+    def get_lambda_transition_band_osc_window(self):
+        return self.lambda_transition_band_osc_window
 
-    def get_confidence_amb(self):
-        return self.confidence_amb
-
+    # Methods for the GUI
     def filter_params(self):
         """ returns the filter parameters as a dataframe for display in the GUI """
         data = {"parameter": ["na_threshold", "min_nb_samples_amb", "get_min_nb_samples_osc", "max_consecutive_na",
@@ -143,15 +141,13 @@ class Settings:
 
     def statistical_params(self):
         """ returns the statistical parameters as a dataframe for display in the GUI """
-        data = {"parameter": ["pmin_osc", "confidence_osc", "pmax_amb", "confidence_amb"],
-                "value": [self.get_pmin_osc(),
-                          self.get_confidence_osc(),
-                          self.get_pmax_amb(),
-                          self.get_confidence_amb()],
-                "description": [self.get_description("pmin_osc"),
-                                self.get_description("confidence_osc"),
-                                self.get_description("pmax_amb"),
-                                self.get_description("confidence_amb")]}
+        data = {"parameter": ["p_value", "confidence", "lambda_transition_band_osc_window"],
+                "value": [self.get_p_value(),
+                          self.get_confidence(),
+                          self.get_lambda_transition_band_osc_window()],
+                "description": [self.get_description("p_value"),
+                                self.get_description("confidence"),
+                                self.get_description("lambda_transition_band_osc_window")]}
         statistical_parameters = pd.DataFrame(data)
         return statistical_parameters
 

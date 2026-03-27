@@ -23,15 +23,12 @@ from oasis_run import (
 
 
 class DummySettings:
-    def get_pmin_osc(self): return 0.2
-    def get_pmax_amb(self): return 0.1
+    def get_p_value(self): return 0.2
+    def get_confidence(self): return 0.9
+    def get_lambda_transition_band_osc_window(self): return 2
     def get_transition_band_starting_amplitude(self): return 2
     def get_transition_band_maximal_amplitude(self): return 6
     def get_transition_band_amplitude_increment(self): return 2
-    @property
-    def confidence_osc(self): return 0.9
-    @property
-    def confidence_amb(self): return 0.9
 
 
 class DummyLogger:

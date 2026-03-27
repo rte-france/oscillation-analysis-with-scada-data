@@ -54,32 +54,44 @@ def identify_suspicious_channels(
         settings,
         logger
 ):
+    # Settings for the statistical test
+    p_value = settings.get_p_value()
+    confidence = settings.get_confidence()
+    lambda_osc = settings.get_lambda_transition_band_osc_window()
+
+    # Settings for the transition band loop
+    transition_band_increment = settings.get_transition_band_amplitude_increment()
+    transition_band_amb_current_amplitude = settings.get_transition_band_starting_amplitude()
+    transition_band_osc_current_amplitude = transition_band_amb_current_amplitude \
+                                            * lambda_osc
+    transition_band_maximal_amp = settings.get_transition_band_maximal_amplitude()
+
     # Calculate Oscillation Window Threshold
     number_samples_oscillation_window = detrended_scada_data_osc.shape[0]
     osc_win_min = determine_min_number_successes_to_reach_confidence(
-        number_samples_oscillation_window, settings.get_pmin_osc(), settings.confidence_osc)
+        number_samples_oscillation_window, p_value, confidence)
 
     # Calculate Ambient Window Thresholds
     number_samples_ambient_window = detrended_scada_data_amb.shape[0]
     amb_win_max = determine_min_number_successes_to_reach_confidence(
-        number_samples_ambient_window, settings.get_pmax_amb(), settings.confidence_amb)
+        number_samples_ambient_window, p_value, confidence)
 
+
+    loop_count = 0  # just for logs, to follow what happens at each iteration
+    final_transition_band_amp = transition_band_amb_current_amplitude
+    suspicious_channels = dict()
     # Transition band loop
     # Important: depending on the dataset and the settings, it is possible that no channel
     # is highlighted for the first iterations, and that afterwards some begins to be ranked.
     # Be careful if you want to refactor the code in order to break the loop
-    loop_count = 0  # just for logs, to follow what happens at each iteration
-    suspicious_channels = dict()
-    final_transition_band_amplitude = settings.get_transition_band_starting_amplitude()
-    transition_band_current_amplitude = settings.get_transition_band_starting_amplitude()
-    while (transition_band_current_amplitude <= settings.get_transition_band_maximal_amplitude()):
+    while (transition_band_amb_current_amplitude <= transition_band_maximal_amp):
         ranking_factors = dict()
         for channel in detrended_scada_data_osc.columns:
             # Calculate number of transitions in the SCADA data
             number_transitions_osc = count_transitions(detrended_scada_data_osc[channel].values,
-                                                       transition_band_current_amplitude)
+                                                       transition_band_osc_current_amplitude)
             number_transitions_amb = count_transitions(detrended_scada_data_amb[channel].values,
-                                                       transition_band_current_amplitude)
+                                                       transition_band_amb_current_amplitude)
 
             if number_transitions_osc <= osc_win_min:
                 # Not enough transitions during the oscillation window => channel discarded
@@ -92,21 +104,22 @@ def identify_suspicious_channels(
             ranking_factors[channel] = round(number_transitions_osc / number_samples_oscillation_window, 2)
 
         ranking_factors_sorted = sorted(ranking_factors.items(), key=lambda x: x[1], reverse=True)
-        msg = "iteration {} - transition_band_current_amplitude = {}"\
-            .format(loop_count, transition_band_current_amplitude)
+        msg = "iteration {} - transition_band_amb_current_amplitude = {}"\
+            .format(loop_count, transition_band_amb_current_amplitude)
         add_log_msg_debug(msg, logger)
         msg = "Ranked channels and ranking_factor: {}".format(ranking_factors_sorted)
         add_log_msg_debug(msg, logger)
 
         if len(ranking_factors_sorted) > 0:
             suspicious_channels = ranking_factors
-            final_transition_band_amplitude = transition_band_current_amplitude
+            final_transition_band_amp = transition_band_amb_current_amplitude
 
-        transition_band_current_amplitude = transition_band_current_amplitude \
-                                            + settings.get_transition_band_amplitude_increment()
+        transition_band_amb_current_amplitude = transition_band_amb_current_amplitude + transition_band_increment
+        transition_band_osc_current_amplitude = transition_band_amb_current_amplitude * lambda_osc
+
         loop_count = loop_count + 1
 
-    return suspicious_channels, final_transition_band_amplitude
+    return suspicious_channels, final_transition_band_amp
 
 
 def zero_crossings(data: np.ndarray):
@@ -163,7 +176,9 @@ def binomial(k, n, p):
 
 def plot_suspicious_channels(scada_data, detrended_scada_data,
                              osc_start, osc_end,
-                             suspicious_channels, final_transition_band_amplitude,
+                             suspicious_channels,
+                             final_transition_band_amp,
+                             lambda_transition_band_osc_window,
                              output_folder,
                              dump_plot):
     html_plots_file = os.path.join(output_folder, 'plots.html')
@@ -219,21 +234,59 @@ def plot_suspicious_channels(scada_data, detrended_scada_data,
             line_width=0,
             row=1, col=2
         )
+
+        final_transition_band_amp_ambient = final_transition_band_amp
+        final_transition_band_amp_osc = final_transition_band_amp * lambda_transition_band_osc_window
+
         fig.add_shape(
             type="line",
-            x0=scada_data.index.min(), x1=scada_data.index.max(),
-            y0=final_transition_band_amplitude, y1=final_transition_band_amplitude,
+            x0=scada_data.index.min(), x1=osc_start_plot,
+            y0=final_transition_band_amp_ambient, y1=final_transition_band_amp_ambient,
             line=dict(color="Green", width=2, dash="dash"),
             row=1, col=2
         )
 
         fig.add_shape(
             type="line",
-            x0=scada_data.index.min(), x1=scada_data.index.max(),
-            y0=-final_transition_band_amplitude, y1=-final_transition_band_amplitude,
+            x0=scada_data.index.min(), x1=osc_start_plot,
+            y0=-final_transition_band_amp_ambient, y1=-final_transition_band_amp_ambient,
             line=dict(color="Green", width=2, dash="dash"),
             row=1, col=2
         )
+
+        fig.add_shape(
+            type="line",
+            x0=osc_end_plot, x1=scada_data.index.max(),
+            y0=final_transition_band_amp_ambient, y1=final_transition_band_amp_ambient,
+            line=dict(color="Green", width=2, dash="dash"),
+            row=1, col=2
+        )
+
+        fig.add_shape(
+            type="line",
+            x0=osc_end_plot, x1=scada_data.index.max(),
+            y0=-final_transition_band_amp_ambient, y1=-final_transition_band_amp_ambient,
+            line=dict(color="Green", width=2, dash="dash"),
+            row=1, col=2
+        )
+
+        fig.add_shape(
+            type="line",
+            x0=osc_start_plot, x1=osc_end_plot,
+            y0=final_transition_band_amp_osc, y1=final_transition_band_amp_osc,
+            line=dict(color="Green", width=2, dash="dash"),
+            row=1, col=2
+        )
+
+        fig.add_shape(
+            type="line",
+            x0=osc_start_plot, x1=osc_end_plot,
+            y0=-final_transition_band_amp_osc, y1=-final_transition_band_amp_osc,
+            line=dict(color="Green", width=2, dash="dash"),
+            row=1, col=2
+        )
+
+
 
         fig.update_yaxes(title_text="MW or MVAr", range=[min_y2 - 10, max_y2 + 10], row=1, col=2)
         fig.update_xaxes(title_text="Time", row=1, col=2)
@@ -349,14 +402,17 @@ def main(
     add_log_msg_info("", logger)
     msg = "IDENTIFYING THE MOST LIKELY SOURCES OF FORCED OSCILLATIONS"
     add_log_msg_info(msg, logger, streamlit_logger)
-    suspicious_channels, final_transition_band_amplitude = identify_suspicious_channels(
+    suspicious_channels, final_transition_band_amp = identify_suspicious_channels(
         detrended_scada_data_amb, detrended_scada_data_osc, settings, logger)
     output_summary_dict["suspicious_channels"] = suspicious_channels
 
     # Processing outputs
     write_processing_outputs_logs(suspicious_channels, logger, streamlit_logger)
-    fig_list = plot_suspicious_channels(scada_data, detrended_scada_data, osc_start, osc_end,
-                                        suspicious_channels, final_transition_band_amplitude,
+    fig_list = plot_suspicious_channels(scada_data, detrended_scada_data,
+                                        osc_start, osc_end,
+                                        suspicious_channels,
+                                        final_transition_band_amp,
+                                        settings.get_lambda_transition_band_osc_window(),
                                         output_folder, dump_plot)
     save_output_summary(output_json, output_summary_dict)
     write_end_of_computation_logs(output_folder, logger, streamlit_logger)

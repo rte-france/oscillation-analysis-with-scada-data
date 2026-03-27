@@ -66,21 +66,17 @@ class TestSettings(unittest.TestCase):
                 "value": 5,
                 "description": "Increment of transition band for iteration."
             },
-            "pmin_osc": {
-                "value": 0.4,
-                "description": "P value for the oscillation window"
-            },
-            "confidence_osc": {
-                "value": 0.95,
-                "description": "Confidence level for oscillation window"
-            },
-            "pmax_amb": {
+            "p_value": {
                 "value": 0.2,
-                "description": "P value for the ambient window"
+                "description": "P value for the statistical test"
             },
-            "confidence_amb": {
+            "confidence": {
                 "value": 0.95,
-                "description": "Confidence level for ambient window"
+                "description": "Confidence level for statistical test"
+            },
+            "lambda_transition_band_osc_window": {
+                "value": 2,
+                "description": "Factor applied to determine the width of the transition band for the oscillation window compared to the ambient window"
             },
             "debug": {
                 "value": True,
@@ -111,10 +107,9 @@ class TestSettings(unittest.TestCase):
         self.assertEqual(s.get_transition_band_maximal_amplitude(), 100)
         self.assertEqual(s.get_transition_band_amplitude_increment(), 5)
         self.assertTrue(s.is_debug())
-        self.assertEqual(s.get_pmin_osc(), 0.4)
-        self.assertEqual(s.get_confidence_osc(), 0.95)
-        self.assertEqual(s.get_pmax_amb(), 0.2)
-        self.assertEqual(s.get_confidence_amb(), 0.95)
+        self.assertEqual(s.get_p_value(), 0.2)
+        self.assertEqual(s.get_confidence(), 0.95)
+        self.assertEqual(s.get_lambda_transition_band_osc_window(), 2)
 
     def test_repr(self):
         s = Settings(self.temp_settings.name)
@@ -166,13 +161,12 @@ class TestSettings(unittest.TestCase):
     def test_statistical_params(self):
         s = Settings(self.temp_settings.name)
         df = s.statistical_params()
-        self.assertEqual(df.shape, (4, 3))
+        self.assertEqual(df.shape, (3, 3))
 
         expected_params = [
-            "pmin_osc",
-            "confidence_osc",
-            "pmax_amb",
-            "confidence_amb",
+            "p_value",
+            "confidence",
+            "lambda_transition_band_osc_window"
         ]
         self.assertCountEqual(df["parameter"].tolist(), expected_params)
 
