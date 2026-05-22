@@ -352,6 +352,7 @@ def main(
     suspicious_channels, final_transition_band_amplitude = identify_suspicious_channels(
         detrended_scada_data_amb, detrended_scada_data_osc, settings, logger)
     output_summary_dict["suspicious_channels"] = suspicious_channels
+    output_summary_dict["final_transition_band_amplitude"] = str(final_transition_band_amplitude)
 
     # Processing outputs
     write_processing_outputs_logs(suspicious_channels, logger, streamlit_logger)
