@@ -36,11 +36,11 @@ median_filter_order:
 
 transition_band_starting_amplitude:
   value: 5
-  description: Amplitude of the transition band that is used at the first iteration
+  description: Amplitude of the transition band for the ambient window that is used at the first iteration
 
 transition_band_maximal_amplitude:
   value: 100
-  description: Maximal value for the transition band amplitude for the iterations
+  description: Maximal value for the transition for the ambient window band amplitude for the iterations
 
 transition_band_amplitude_increment:
   value: 5
