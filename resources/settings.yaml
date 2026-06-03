@@ -35,7 +35,7 @@ median_filter_order:
   description: Order of the median filter applied for detrending the data. Useful only if the selected detrending method is "median filter"
 
 transition_band_starting_amplitude:
-  value: 5
+  value: 10
   description: Amplitude of the transition band for the ambient window that is used at the first iteration
 
 transition_band_maximal_amplitude:
