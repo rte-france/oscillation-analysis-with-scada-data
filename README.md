@@ -14,7 +14,7 @@
 Python implementation of a method to locate the source of forced oscillations in a power system.
 
 <p align="center">
-<img src="resources/oasis_logo.png">
+<img src="resources/oasis_logo.png" width="500">
 </p>
 
 ## Table of Contents
